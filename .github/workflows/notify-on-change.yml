@@ -41,4 +41,5 @@ jobs:
               number: context.issue.number
             }
             const result = await github.graphql(query, variables)
-            console.log(result)
+            const participants = result.repository.pullRequest.participants.map(a => a.login)
+            console.log(participants)
