@@ -21,3 +21,24 @@ jobs:
               repo: context.repo.repo,
               body: 'CC @NathanReb'
             })
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const query = `query($owner:String!, $name:String!, $label:String!) {
+              repository(owner:$owner, name:$name){
+                pullRequest(number: $number) {
+                  participants(first: 20) {
+                    nodes {
+                      login
+                    }
+                  }
+                }
+              }
+            }`;
+            const variables = {
+              owner: context.repo.owner,
+              name: context.repo.repo,
+              number: context.issue.number
+            }
+            const result = await github.graphql(query, variables)
+            console.log(result)
