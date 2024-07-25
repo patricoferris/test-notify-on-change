@@ -7,12 +7,14 @@ on:
       - 'c.md'
 
 jobs:
-  comment:
+  comment-and-label:
+    if: ${{! contains(github.event.pull_request.labels.*.name, 'modifies-a-or-c')}}
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v7
+      - name: Notify Nathan
+        uses: actions/github-script@v7
         with:
           script: |
             github.rest.issues.createComment({
@@ -21,25 +23,13 @@ jobs:
               repo: context.repo.repo,
               body: 'CC @NathanReb'
             })
-      - uses: actions/github-script@v7
+      - name: Label PR
+        uses: actions/github-script@v7
         with:
           script: |
-            const query = `query($owner:String!, $name:String!, $number:Int!) {
-              repository(owner:$owner, name:$name){
-                pullRequest(number: $number) {
-                  participants(first: 20) {
-                    nodes {
-                      login
-                    }
-                  }
-                }
-              }
-            }`;
-            const variables = {
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
-              name: context.repo.repo,
-              number: context.issue.number
-            }
-            const result = await github.graphql(query, variables)
-            const participants = result.repository.pullRequest.participants.map(a => a.login)
-            console.log(participants)
+              repo: context.repo.repo,
+              labels: ['modifies-a-or-c']
+            })
