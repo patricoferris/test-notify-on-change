@@ -9,8 +9,10 @@ on:
 jobs:
   comment-and-label:
     if: ${{! contains(github.event.pull_request.labels.*.name, 'modifies-a-or-c')}}
+    
     permissions:
       pull-requests: write
+    
     runs-on: ubuntu-latest
     steps:
       - name: Notify Nathan
