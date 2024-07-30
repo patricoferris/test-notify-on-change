@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Notify Nathan
         uses: actions/github-script@v7
-        permissions:
-          pull_requests: write
         with:
           script: |
             github.rest.issues.createComment({
@@ -26,8 +24,6 @@ jobs:
               body: '@NathanReb a.md or c.md were modified in this PR, might wanna take a look'
             })
       - name: Label PR
-        permissions:
-          pull_requests: write
         uses: actions/github-script@v7
         with:
           script: |
