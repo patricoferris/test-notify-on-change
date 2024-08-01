@@ -1,0 +1,35 @@
+name: Notify 
+
+on:
+  pull_request:
+    paths:
+      - 'a.md'
+      - 'c.md'
+
+jobs:
+  comment-and-label:
+    if: ${{! contains(github.event.pull_request.labels.*.name, 'modifies-a-or-c')}}
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Nathan
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'CC @NathanReb'
+            })
+      - name: Label PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['modifies-a-or-c']
+            })
